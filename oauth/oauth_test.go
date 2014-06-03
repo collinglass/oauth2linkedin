@@ -18,14 +18,13 @@ import (
 )
 
 var requests = []struct {
-	path, query, auth string // request
+	path, query       string // request
 	contenttype, body string // response
 }{
 	{
 		path:        "/token",
 		query:       "grant_type=authorization_code&code=c0d3&client_id=cl13nt1d&client_secret=s3cr3t",
 		contenttype: "application/json",
-		auth:        "Basic Y2wxM250MWQ6czNjcjN0",
 		body: `
 			{
 				"access_token":"token1",
@@ -35,12 +34,11 @@ var requests = []struct {
 			}
 		`,
 	},
-	{path: "/secure", auth: "Bearer token1", body: "first payload"},
+	{path: "/secure", query: "oauth2_access_token=token1", body: "first payload"},
 	{
 		path:        "/token",
 		query:       "grant_type=refresh_token&refresh_token=refreshtoken1&client_id=cl13nt1d&client_secret=s3cr3t",
 		contenttype: "application/json",
-		auth:        "Basic Y2wxM250MWQ6czNjcjN0",
 		body: `
 			{
 				"access_token":"token2",
@@ -50,15 +48,14 @@ var requests = []struct {
 			}
 		`,
 	},
-	{path: "/secure", auth: "Bearer token2", body: "second payload"},
+	{path: "/secure", query: "oauth2_access_token=token2", body: "second payload"},
 	{
 		path:        "/token",
 		query:       "grant_type=refresh_token&refresh_token=refreshtoken2&client_id=cl13nt1d&client_secret=s3cr3t",
 		contenttype: "application/x-www-form-urlencoded",
 		body:        "access_token=token3&refresh_token=refreshtoken3&id_token=idtoken3&expires_in=3600",
-		auth:        "Basic Y2wxM250MWQ6czNjcjN0",
 	},
-	{path: "/secure", auth: "Bearer token3", body: "third payload"},
+	{path: "/secure", query: "oauth2_access_token=token3", body: "third payload"},
 }
 
 func TestOAuth(t *testing.T) {
@@ -81,9 +78,6 @@ func TestOAuth(t *testing.T) {
 			if g, w := r.FormValue(k), want.Get(k); g != w {
 				t.Errorf("query[%s] = %s, want %s", k, g, w)
 			}
-		}
-		if g, w := r.Header.Get("Authorization"), req.auth; w != "" && g != w {
-			t.Errorf("Authorization: %v, want %v", g, w)
 		}
 
 		// Send response.

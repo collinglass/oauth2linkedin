@@ -272,7 +272,11 @@ func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	// so that we don't modify the Request we were given.
 	// This is required by the specification of http.RoundTripper.
 	req = cloneRequest(req)
-	req.Header.Set("Authorization", "Bearer "+t.AccessToken)
+
+	q := req.URL.Query()
+	q.Set("oauth2_access_token", t.AccessToken)
+	q.Set("format", "json")
+	req.URL.RawQuery = q.Encode()
 
 	// Make the HTTP request.
 	return t.transport().RoundTrip(req)

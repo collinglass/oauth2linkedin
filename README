@@ -1,3 +1,5 @@
+This is a fork of the goauth2 repository, it has been modified to send the access token on the query string to use with Linkedin API.
+
 This is the repository for goauth2; an OAuth 2.0 client library for Go.
 
 To contribute, follow the Go Programming Language's contribution process:
